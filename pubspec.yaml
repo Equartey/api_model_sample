@@ -1,0 +1,25 @@
+name: api_model_sample
+description: A new Flutter project.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=2.18.0 <4.0.0"
+  flutter: ">=3.3.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  async: ^2.9.0
+  amplify_auth_cognito: ^1.4.0
+  amplify_authenticator: ^1.4.0
+  amplify_api: ^1.4.0
+  amplify_flutter: ^1.4.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
