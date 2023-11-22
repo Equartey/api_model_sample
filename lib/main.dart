@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:amplify_logging_cloudwatch/amplify_logging_cloudwatch.dart';
 import 'package:flutter/material.dart';
 
 import 'amplifyconfiguration.dart';
+import 'amplifyconfiguration_logging.dart';
 import 'models/ModelProvider.dart';
 
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
@@ -25,8 +29,19 @@ Future<void> configureAmplify() async {
     apiPlugin,
     authPlugin,
   ]);
+
+  final amplifyConfigWithLogging = AmplifyConfig.fromJson(
+    jsonDecode(amplifyconfig) as Map<String, dynamic>,
+  ).copyWith(
+    logging: LoggingConfig.fromJson(
+      jsonDecode(loggingconfig) as Map<String, dynamic>,
+    ),
+  );
+
+  final config = const JsonEncoder().convert(amplifyConfigWithLogging.toJson());
+
   try {
-    await Amplify.configure(amplifyconfig);
+    await Amplify.configure(config);
   } on AmplifyAlreadyConfiguredException {
     safePrint(
         'Tried to reconfigure Amplify; this can occur when your app restarts on Android.');
@@ -61,6 +76,7 @@ class _MyListState extends State<MyList> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    _plugin.enable();
     WidgetsBinding.instance.addObserver(this);
     subscribe();
     listenToApiHub();
@@ -68,11 +84,15 @@ class _MyListState extends State<MyList> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    AmplifyLogger('API').log(LogLevel.verbose, 'AppLifecycleState: $state');
     switch (state) {
       case AppLifecycleState.resumed:
+        // Todo: fetch data for missed messages
         subscribe();
         break;
       case AppLifecycleState.paused:
+        // case AppLifecycleState.detached:
+        // unsubscribe anytime when the app is not in the foreground
         unsubscribe();
         break;
       default:
@@ -88,11 +108,15 @@ class _MyListState extends State<MyList> with WidgetsBindingObserver {
   }
 
   StreamSubscription<GraphQLResponse<Item>>? _itemsSubscription;
+  final _plugin = AmplifyLogger().getPlugin<AmplifyCloudWatchLoggerPlugin>()!;
 
   List<Item> itemsList = [];
   String _hubConnectionStatus = "";
+  final subscriptionRequest = ModelSubscriptions.onCreate(
+      Item.classType); // move me out of subscribe function
+
   void subscribe() {
-    final subscriptionRequest = ModelSubscriptions.onCreate(Item.classType);
+    safePrint('Subscribing...');
     final Stream<GraphQLResponse<Item>> operation = Amplify.API.subscribe(
       subscriptionRequest,
       onEstablished: () => safePrint('Subscription established'),
@@ -152,51 +176,72 @@ class _MyListState extends State<MyList> with WidgetsBindingObserver {
     safePrint('Mutation result: ${response}');
   }
 
+  void _flushLogs() {
+    _plugin.flushLogs();
+  }
+
+  void _poke() {
+    AmplifyLogger('API').log(LogLevel.verbose, 'Hello World!');
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        persistentFooterButtons: [
-          FloatingActionButton(
-            onPressed: () => createItem(),
-            backgroundColor: Colors.green,
-            child: const Text("Create"),
-          ),
-          FloatingActionButton(
-            onPressed: () => subscribe(),
-            backgroundColor: Colors.blue,
-            child: const Text("subscribe"),
-          ),
-          FloatingActionButton(
-            onPressed: () => mimicAppOffAndOn(count: 3),
-            backgroundColor: Colors.blue,
-            child: const Text("Mimic"),
-          ),
-          FloatingActionButton(
-            onPressed: unsubscribe,
-            backgroundColor: Colors.red,
-            child: const Text("Unsubscribe"),
-          ),
-        ],
-        body: Column(
-          children: [
-            Text(
-              "Connection Status: $_hubConnectionStatus",
-              style: const TextStyle(color: Colors.white),
+    return Authenticator(
+      child: MaterialApp(
+        builder: Authenticator.builder(),
+        home: Scaffold(
+          persistentFooterButtons: [
+            FloatingActionButton(
+              onPressed: () => _poke(),
+              backgroundColor: Colors.amber,
+              child: const Text("poke"),
             ),
-            const SizedBox(
-              height: 20,
+            FloatingActionButton(
+              onPressed: () => _flushLogs(),
+              backgroundColor: Colors.amber,
+              child: const Text("Flush"),
             ),
-            Expanded(
-                child: ListView.builder(
-              itemBuilder: (context, index) => ListTile(
-                title: Text(
-                  itemsList[index].id,
-                ),
-              ),
-              itemCount: itemsList.length,
-            ))
+            FloatingActionButton(
+              onPressed: () => createItem(),
+              backgroundColor: Colors.green,
+              child: const Text("Create"),
+            ),
+            FloatingActionButton(
+              onPressed: () => subscribe(),
+              backgroundColor: Colors.blue,
+              child: const Text("subscribe"),
+            ),
+            FloatingActionButton(
+              onPressed: () => mimicAppOffAndOn(count: 3),
+              backgroundColor: Colors.blue,
+              child: const Text("Mimic"),
+            ),
+            FloatingActionButton(
+              onPressed: unsubscribe,
+              backgroundColor: Colors.red,
+              child: const Text("Unsubscribe"),
+            ),
           ],
+          body: Column(
+            children: [
+              Text(
+                "Connection Status: $_hubConnectionStatus",
+                style: const TextStyle(color: Colors.black),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                  child: ListView.builder(
+                itemBuilder: (context, index) => ListTile(
+                  title: Text(
+                    itemsList[index].id,
+                  ),
+                ),
+                itemCount: itemsList.length,
+              ))
+            ],
+          ),
         ),
       ),
     );

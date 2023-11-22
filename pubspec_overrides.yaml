@@ -1,0 +1,43 @@
+dependency_overrides:
+  amplify_logging_cloudwatch:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/logging_cloudwatch/amplify_logging_cloudwatch
+  aws_logging_cloudwatch:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/logging_cloudwatch/aws_logging_cloudwatch
+  # amplify_auth_cognito:
+  #   path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/auth/amplify_auth_cognito
+  amplify_api:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/api/amplify_api
+  amplify_flutter:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/amplify/amplify_flutter
+  amplify_db_common_dart:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/common/amplify_db_common_dart
+  amplify_analytics_pinpoint:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/analytics/amplify_analytics_pinpoint
+  amplify_analytics_pinpoint_dart:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/analytics/amplify_analytics_pinpoint_dart
+  amplify_auth_cognito:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/auth/amplify_auth_cognito
+  amplify_auth_cognito_dart:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/auth/amplify_auth_cognito_dart
+  amplify_authenticator:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/authenticator/amplify_authenticator
+  amplify_core:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/amplify_core
+  amplify_db_common:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/common/amplify_db_common
+  amplify_lints:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/amplify_lints
+  amplify_secure_storage:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/secure_storage/amplify_secure_storage
+  amplify_secure_storage_dart:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/secure_storage/amplify_secure_storage_dart
+  aws_common:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/aws_common
+  aws_signature_v4:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/aws_signature_v4
+  smithy:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/smithy/smithy
+  smithy_aws:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/smithy/smithy_aws
+  worker_bee:
+    path: /Users/quaelija/code/forks/af/feat/logging/cloudwatch/packages/worker_bee/worker_bee
